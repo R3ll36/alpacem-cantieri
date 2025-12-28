@@ -34,17 +34,7 @@ export const MapView: React.FC<MapViewProps> = ({
                 theme={appState.theme}
             />
 
-            {/* FAB for Mobile Only - MANUAL ADD */}
-            {appState.user?.role === 'admin' && (
-                <div className="absolute bottom-24 right-4 md:bottom-8 md:right-8 z-[400]">
-                    <button
-                        onClick={onManualAdd}
-                        className="w-14 h-14 bg-alpa-500 text-white rounded-full shadow-xl shadow-alpa-500/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
-                    >
-                        <PlusIcon className="w-7 h-7" />
-                    </button>
-                </div>
-            )}
+            {/* FAB Moved to App.tsx for persistence */}
         </div>
     );
 };

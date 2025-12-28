@@ -164,6 +164,28 @@ const App: React.FC = () => {
             currentView={appState.view}
             onNavigate={handleNavigate}
         />
+
+        {/* PERSISTENT FAB (Manual Add / Close) - z-index higher than Modal (100) */}
+        {appState.user?.role === 'admin' && appState.view === 'map' && (
+             <div className="absolute bottom-24 right-4 md:bottom-8 md:right-8 z-[500]">
+                <button
+                    onClick={() => {
+                        if (isAddingSite) {
+                            setIsAddingSite(null); // Close if open
+                        } else {
+                            handleManualAdd(); // Open if closed
+                        }
+                    }}
+                    className={`w-14 h-14 bg-alpa-500 text-white rounded-full shadow-xl shadow-alpa-500/40 flex items-center justify-center transition-all duration-300 ${isAddingSite ? 'rotate-45 bg-slate-700' : 'rotate-0 hover:scale-105 active:scale-95'}`}
+                >
+                    <div className="w-7 h-7 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-full h-full">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                    </div>
+                </button>
+             </div>
+        )}
       </main>
 
       {/* DRAWERS / MODALS - NOW HANDLED AS SLIDE-OVERS FOR BETTER UX */}
