@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { storageService } from '../services/storage';
 import { authService } from '../services/auth';
 import { AppState, ConstructionSite, User, UserRole } from '../types';
+import { useToast } from '../context/ToastContext';
 
 export const useAppLogic = () => {
+  const { showToast } = useToast();
   const [appState, setAppState] = useState<AppState>({
     user: null,
     sites: [],
