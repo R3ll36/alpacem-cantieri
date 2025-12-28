@@ -1,0 +1,8 @@
+{
+  "name": "Alpacem Cantieri",
+  "description": "Progressive Web App per la gestione professionale dei cantieri di pompe calcestruzzo con mappe interattive e note collaborative.",
+  "requestFramePermissions": [
+    "geolocation",
+    "camera"
+  ]
+}
