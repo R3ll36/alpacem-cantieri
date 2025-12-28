@@ -116,7 +116,6 @@ export const SiteModal: React.FC<SiteModalProps> = ({ initialLat, initialLng, in
                 type="text"
                 className="w-full p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-alpa-500 focus:border-alpa-500 outline-none transition-all shadow-sm"
                 value={formData.address}
-                value={formData.address}
                 onChange={e => {
                     const text = e.target.value;
                     setFormData({...formData, address: text});

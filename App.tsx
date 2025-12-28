@@ -10,9 +10,10 @@ import { SiteDetail } from './components/SiteDetail';
 import { SiteModal } from './components/SiteModal';
 import { InstallPrompt } from './components/InstallPrompt';
 
-import { useVersionCheck } from './hooks/useVersionCheck';
+import { useToast } from './context/ToastContext';
 
 const App: React.FC = () => {
+  const { showToast } = useToast();
   useVersionCheck(); // Active auto-update check
 
   const {
