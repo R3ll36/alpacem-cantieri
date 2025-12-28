@@ -96,8 +96,10 @@ export const ClientsView: React.FC<ClientsViewProps> = ({
                       >
                         <div className="flex items-center gap-4">
                            <div className="w-2 h-12 rounded-full opacity-30 group-hover:opacity-100 transition-opacity" style={{ backgroundColor: site.color }}></div>
-                           <div>
-                             <h4 className="font-semibold text-slate-900 dark:text-white">{site.address}</h4>
+                           <div className="min-w-0 flex-1">
+                             <h4 className="font-semibold text-slate-900 dark:text-white truncate pr-2" title={site.address}>
+                               {site.address.length > 35 ? site.address.substring(0, 35) + '...' : site.address}
+                             </h4>
                              <div className="flex items-center gap-3 text-xs text-slate-500 mt-1">
                                <span className="flex items-center gap-1">
                                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
