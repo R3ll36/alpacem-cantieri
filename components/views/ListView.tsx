@@ -11,7 +11,7 @@ interface ListViewProps {
 
 export const ListView: React.FC<ListViewProps> = ({ sites, onSelectSite, onEdit, onDelete }) => {
   return (
-    <div className="w-full h-full overflow-y-auto bg-slate-50 dark:bg-slate-950 pt-24 md:pt-6 pb-24 px-4 md:px-8">
+    <div className="w-full h-full overflow-y-auto bg-slate-50 dark:bg-slate-950 pt-32 md:pt-6 pb-24 px-4 md:px-8">
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Cantieri Attivi</h2>

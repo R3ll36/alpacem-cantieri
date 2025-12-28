@@ -34,7 +34,7 @@ export const ClientsView: React.FC<ClientsViewProps> = ({
   const clientNames = Object.keys(groupedSites).sort();
 
   return (
-    <div className="w-full h-full overflow-y-auto bg-slate-50 dark:bg-slate-950 pt-16 md:pt-6 pb-24 px-4 md:px-8">
+    <div className="w-full h-full overflow-y-auto bg-slate-50 dark:bg-slate-950 pt-32 md:pt-6 pb-24 px-4 md:px-8">
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <div>
