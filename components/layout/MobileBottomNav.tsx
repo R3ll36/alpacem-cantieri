@@ -8,7 +8,7 @@ interface MobileBottomNavProps {
 
 export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentView, onNavigate }) => {
   return (
-    <nav className="md:hidden absolute bottom-0 left-0 right-0 bg-white/30 dark:bg-slate-900/30 backdrop-blur-xl border-t border-slate-200/30 dark:border-slate-800/30 px-6 py-3 pb-safe z-30 flex justify-between items-center gap-4">
+    <nav className="md:hidden absolute bottom-0 left-0 right-0 bg-white/10 dark:bg-slate-900/10 backdrop-blur-xl border-t border-slate-200/10 dark:border-slate-800/10 px-6 py-3 pb-safe z-30 flex justify-between items-center gap-4">
        <button
         onClick={() => onNavigate('map')}
           className={`flex-1 overflow-hidden transition-all duration-300 relative flex flex-col items-center justify-center p-2 rounded-2xl ${

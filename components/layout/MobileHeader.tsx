@@ -9,7 +9,7 @@ interface MobileHeaderProps {
 
 export const MobileHeader: React.FC<MobileHeaderProps> = ({ theme, onToggleTheme, onLogout }) => {
   return (
-    <header className="md:hidden flex items-center justify-between px-4 py-3 bg-white/30 dark:bg-slate-900/30 backdrop-blur-xl border-b border-slate-200/30 dark:border-slate-800/30 z-20 absolute top-0 left-0 right-0">
+    <header className="md:hidden flex items-center justify-between px-4 py-3 bg-white/10 dark:bg-slate-900/10 backdrop-blur-xl border-b border-slate-200/10 dark:border-slate-800/10 z-20 absolute top-0 left-0 right-0">
       <div className="w-32 h-20">
          <img src="/app-icon.png" alt="Alpacem" className="w-full h-full object-contain" />
       </div>
