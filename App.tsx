@@ -84,6 +84,57 @@ const App: React.FC = () => {
     }
   };
 
+  // HANDLE SHARE TARGET (Deep Links from WhatsApp/Maps)
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const sharedTitle = params.get('title') || '';
+    const sharedText = params.get('text') || '';
+    const sharedUrl = params.get('url') || '';
+
+    // Combine all shared content to search for coordinates/links
+    const fullContent = `${sharedTitle} ${sharedText} ${sharedUrl}`;
+
+    if (!sharedText && !sharedUrl) return;
+
+    console.log("Received Share:", { sharedTitle, sharedText, sharedUrl });
+
+    // 1. Try to find coordinates directly (e.g. "46.123, 13.456")
+    // Matches: "46.123, 13.456" or "q=46.123,13.456" or "@46.123,13.456"
+    const coordRegex = /[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)/;
+    const match = fullContent.match(coordRegex);
+
+    if (match) {
+        const [fullMatch] = match;
+        const [latStr, lngStr] = fullMatch.split(',');
+        const lat = parseFloat(latStr.trim());
+        const lng = parseFloat(lngStr.trim());
+
+        if (!isNaN(lat) && !isNaN(lng)) {
+            // Found valid coordinates!
+            setIsAddingSite({
+                lat,
+                lng,
+                address: sharedText || sharedTitle || 'Posizione Condivisa'
+            });
+            // Clean URL
+            window.history.replaceState({}, '', window.location.pathname);
+            return;
+        }
+    }
+
+    // 2. Fallback: If no coords found but we have text, open Modal with 0,0 and pre-fill address text
+    // This allows user to use the text to search or valid manually
+    if (sharedText || sharedUrl) {
+        setIsAddingSite({
+            lat: 0,
+            lng: 0,
+            address: (sharedText + ' ' + sharedUrl).trim()
+        });
+        window.history.replaceState({}, '', window.location.pathname);
+    }
+
+  }, []);
+
   if (isAuthLoading) {
     return (
         <div className="h-full w-full flex items-center justify-center bg-slate-50 dark:bg-slate-950">
