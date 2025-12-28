@@ -50,16 +50,22 @@ export const Toast: React.FC<ToastProps> = ({ message, type, action, onClose }) 
     )
   };
 
+  const isUpdate = !!action;
+
   return (
-    <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-4 duration-300 w-[90%] max-w-sm`}>
-      <div className={`flex items-start gap-3 px-4 py-3 rounded-xl border shadow-lg backdrop-blur-sm ${styles[type]}`}>
+    <div className={`fixed z-50 animate-in fade-in zoom-in duration-300 w-[90%] max-w-sm
+        ${isUpdate ? 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2' : 'top-4 left-1/2 -translate-x-1/2 slide-in-from-top-4'}
+    `}>
+      <div className={`flex items-start gap-3 px-5 py-4 rounded-2xl border shadow-2xl backdrop-blur-md ${styles[type]} ${isUpdate ? 'border-2' : ''}`}>
         <div className="mt-0.5">{icons[type]}</div>
-        <div className="flex-1 text-sm font-medium">
-            {message}
+        <div className="flex-1">
+            <p className={`${isUpdate ? 'text-lg font-bold text-slate-900 dark:text-white' : 'text-sm font-medium'}`}>
+                {message}
+            </p>
             {action && (
                 <button
                     onClick={action.onClick}
-                    className="block mt-2 text-xs font-bold underline hover:opacity-80"
+                    className="block mt-3 w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold text-sm transition-colors shadow-md"
                 >
                     {action.label}
                 </button>
