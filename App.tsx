@@ -165,22 +165,12 @@ const App: React.FC = () => {
             onNavigate={handleNavigate}
         />
 
-        {/* PERSISTENT FAB (Manual Add / Close) - z-index higher than Modal (100) */}
-        {appState.user?.role === 'admin' && appState.view === 'map' && (
-             <div className="absolute bottom-28 right-6 md:bottom-10 md:right-10 z-[500]">
+        {/* PERSISTENT FAB (Manual Add) - z-index higher than Modal (100) */}
+        {appState.user?.role === 'admin' && appState.view === 'map' && !isAddingSite && (
+             <div className="absolute bottom-28 right-6 md:bottom-10 md:right-10 z-[50]">
                 <button
-                    onClick={() => {
-                        if (isAddingSite) {
-                            setIsAddingSite(null); // Close if open
-                        } else {
-                            handleManualAdd(); // Open if closed
-                        }
-                    }}
-                    className={`w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all duration-300
-                        ${isAddingSite
-                            ? 'rotate-45 bg-slate-700 text-white'
-                            : 'rotate-0 hover:scale-105 active:scale-95 bg-white dark:bg-alpa-500 text-slate-900 dark:text-white'
-                        }`}
+                    onClick={handleManualAdd}
+                    className="w-14 h-14 bg-white dark:bg-alpa-500 text-slate-900 dark:text-white rounded-full shadow-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all duration-300"
                 >
                     <div className="w-7 h-7 flex items-center justify-center">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-full h-full">
