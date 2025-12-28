@@ -11,6 +11,7 @@ import { SiteModal } from './components/SiteModal';
 import { InstallPrompt } from './components/InstallPrompt';
 
 import { useToast } from './context/ToastContext';
+import { useVersionCheck } from './hooks/useVersionCheck';
 
 const App: React.FC = () => {
   const { showToast } = useToast();
