@@ -16,6 +16,7 @@ export const useAppLogic = () => {
   const [editingSite, setEditingSite] = useState<ConstructionSite | null>(null);
   const [mapCenter, setMapCenter] = useState<[number, number] | null>(null);
   const [userLocation, setUserLocation] = useState<{ lat: number, lng: number } | null>(null);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
 
   // Initial Load & Auth Listener
   useEffect(() => {
@@ -41,6 +42,7 @@ export const useAppLogic = () => {
         user,
         view: user ? 'map' : 'login'
       }));
+      setIsAuthLoading(false);
     });
 
     return () => unsubscribe();
