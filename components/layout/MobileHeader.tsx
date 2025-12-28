@@ -10,7 +10,7 @@ interface MobileHeaderProps {
 export const MobileHeader: React.FC<MobileHeaderProps> = ({ theme, onToggleTheme, onLogout }) => {
   return (
     <header className="md:hidden flex items-center justify-between px-4 py-3 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 z-20 absolute top-0 left-0 right-0">
-      <div className="w-16">
+      <div className="w-32">
          <AlpacemLogo className="w-full" />
       </div>
       <div className="flex items-center gap-2">

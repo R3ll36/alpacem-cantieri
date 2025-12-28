@@ -39,7 +39,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin, onRegister, onGoo
       <div className="w-full max-w-md p-6 z-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
         <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl shadow-slate-200/50 dark:shadow-black/50 border border-slate-100 dark:border-slate-800 p-8 md:p-10">
           <div className="flex flex-col items-center mb-8">
-            <div className="w-32 mb-6 transition-transform hover:scale-105 duration-700">
+            <div className="w-40 mb-6 transition-transform hover:scale-105 duration-700">
                 <AlpacemLogo className="w-full" />
             </div>
             <h1 className="text-xl font-semibold text-slate-800 dark:text-slate-100 tracking-tight text-center">
