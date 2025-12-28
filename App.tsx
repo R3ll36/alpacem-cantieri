@@ -63,10 +63,14 @@ const App: React.FC = () => {
         return;
     }
 
-    // 2. Fallback: Try fresh GPS request (Slower, might timeout)
+    showToast("Ricerca posizione in corso...", "info");
+
+    // 2. PROGRESSIVE STRATEGY: Try GPS first, then WiFi/Cell
     if (navigator.geolocation) {
+      // ATTEMPT 1: High Accuracy (GPS)
       navigator.geolocation.getCurrentPosition(
         (position) => {
+          // ✅ GPS Success - Best accuracy
           setIsAddingSite({
             lat: position.coords.latitude,
             lng: position.coords.longitude,
@@ -74,12 +78,36 @@ const App: React.FC = () => {
           });
         },
         (error) => {
-          console.error("Error getting location", error);
-          // 3. Last resort: Default 0,0
-          setIsAddingSite({ lat: 0, lng: 0, address: '' });
+          console.warn("High accuracy (GPS) failed, trying low accuracy...", error);
+
+          // Don't retry if permission was denied
+          if (error.code === 1) {
+            showToast("Permesso posizione negato. Inserisci manualmente.", "error");
+            setIsAddingSite({ lat: 0, lng: 0, address: '' });
+            return;
+          }
+
+          // ATTEMPT 2: Low Accuracy (WiFi/Cell)
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              // ✅ WiFi/Cell Success - Approximate location
+              setIsAddingSite({
+                lat: position.coords.latitude,
+                lng: position.coords.longitude,
+                address: `${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)}`
+              });
+            },
+            (error2) => {
+              // ❌ Both attempts failed
+              console.error("Both location attempts failed", error2);
+              showToast("Impossibile trovare la posizione. Uso 0,0.", "warning");
+              // 3. Last resort: Default 0,0
+              setIsAddingSite({ lat: 0, lng: 0, address: '' });
+            },
+            { timeout: 30000, enableHighAccuracy: false, maximumAge: 300000 }
+          );
         },
-        // Add timeout and high accuracy options
-        { timeout: 5000, enableHighAccuracy: true, maximumAge: 0 }
+        { timeout: 15000, enableHighAccuracy: true, maximumAge: 0 }
       );
     } else {
       setIsAddingSite({ lat: 0, lng: 0, address: '' });
@@ -245,7 +273,11 @@ const App: React.FC = () => {
           initialAddress={isAddingSite.address}
           userUid={appState.user.uid}
           onClose={() => setIsAddingSite(null)}
-          onSave={handleSaveNewSite}
+          onSave={(site) => {
+              handleSaveNewSite(site);
+              setMapCenter([site.lat, site.lng]);
+              setView('map');
+          }}
           existingSites={appState.sites}
         />
       )}

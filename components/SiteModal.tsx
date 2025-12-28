@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useToast } from '../context/ToastContext';
 import { ConstructionSite } from '../types';
 import { stringToColor } from '../utils/colorUtils';
 
@@ -14,6 +15,7 @@ interface SiteModalProps {
 }
 
 export const SiteModal: React.FC<SiteModalProps> = ({ initialLat, initialLng, initialAddress, userUid, onClose, onSave, siteToEdit, existingSites }) => {
+  const { showToast } = useToast();
   const [formData, setFormData] = useState({
     name: siteToEdit?.name || '',
     address: siteToEdit?.address || initialAddress || '',
@@ -27,6 +29,11 @@ export const SiteModal: React.FC<SiteModalProps> = ({ initialLat, initialLng, in
     lat: siteToEdit?.lat || initialLat,
     lng: siteToEdit?.lng || initialLng
   });
+
+  // State for link resolution (prevents duplicate requests)
+  const [isResolving, setIsResolving] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const searchTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
   // Check if this is a manual entry (we passed 0,0 from the FAB) AND we are not editing
   const isManualEntry = !siteToEdit && initialLat === 0 && initialLng === 0;
@@ -110,33 +117,115 @@ export const SiteModal: React.FC<SiteModalProps> = ({ initialLat, initialLng, in
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-2">Indirizzo</label>
-              <input
-                required
-                type="text"
-                className="w-full p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-alpa-500 focus:border-alpa-500 outline-none transition-all shadow-sm"
-                value={formData.address}
-                onChange={e => {
-                    const text = e.target.value;
-                    setFormData({...formData, address: text});
+              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-2">
+                Indirizzo
+                {(isResolving || isSearching) && (
+                  <span className="ml-2 text-alpa-500 text-xs font-normal">
+                    🔍 Ricerca in corso...
+                  </span>
+                )}
+              </label>
+              <div className="relative">
+                <input
+                  required
+                  type="text"
+                  className="w-full p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-alpa-500 focus:border-alpa-500 outline-none transition-all shadow-sm"
+                  value={formData.address}
+                  onChange={async (e) => {
+                      const text = e.target.value;
+                      setFormData({...formData, address: text});
 
-                    // Auto-extract coordinates from text/links
-                    // Regex for "lat, lng" patterns (e.g. 46.123, 13.123) common in Maps links
-                    const coordRegex = /[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)/;
-                    const match = text.match(coordRegex);
+                      // Clear previous search timeout
+                      if (searchTimeoutRef.current) {
+                          clearTimeout(searchTimeoutRef.current);
+                      }
 
-                    if (match) {
-                        const [fullMatch] = match;
-                        const [latStr, lngStr] = fullMatch.split(',');
-                        const lat = parseFloat(latStr.trim());
-                        const lng = parseFloat(lngStr.trim());
-                        if (!isNaN(lat) && !isNaN(lng)) {
-                            setCoords({ lat, lng });
-                        }
-                    }
-                }}
-                placeholder={isManualEntry ? "Inserisci indirizzo o LINK MAPS" : "Via Principale 12, Città"}
-              />
+                      // 1. Standard Coordinate Extraction (Fast, runs first)
+                      const coordRegex = /[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)/;
+                      const match = text.match(coordRegex);
+
+                      if (match) {
+                          const [fullMatch] = match;
+                          const [latStr, lngStr] = fullMatch.split(',');
+                          const lat = parseFloat(latStr.trim());
+                          const lng = parseFloat(lngStr.trim());
+                          if (!isNaN(lat) && !isNaN(lng)) {
+                              setCoords({ lat, lng });
+                              return; // Found coords, no need to resolve links or search
+                          }
+                      }
+
+                      // 2. Link Decoding (Slower, only if no direct coords found)
+                      const shortLinkRegex = /(https?:\/\/(maps\.app\.goo\.gl|goo\.gl|bit\.ly)\/[^\s]+)/;
+                      const linkMatch = text.match(shortLinkRegex);
+
+                      if (linkMatch && !isResolving) {
+                          const shortUrl = linkMatch[0];
+                          setIsResolving(true);
+                          try {
+                              const res = await fetch(`https://unshorten.me/json/${shortUrl}`);
+                              const data = await res.json();
+                              if (data.success && data.resolved_url) {
+                                  const decodedUrl = decodeURIComponent(data.resolved_url);
+                                  const robustRegex = /(-?\d{1,3}\.\d{3,})[,\s]\s*(?:\+)?(-?\d{1,3}\.\d{3,})/;
+                                  const coordsMatch = decodedUrl.match(robustRegex);
+
+                                  if (coordsMatch) {
+                                      const lat = parseFloat(coordsMatch[1]);
+                                      const lng = parseFloat(coordsMatch[2]);
+                                      if(!isNaN(lat) && !isNaN(lng)) {
+                                          setCoords({lat, lng});
+                                          showToast("Posizione trovata dal link!", "success");
+                                      }
+                                  }
+                              }
+                          } catch (err) {
+                              console.error("Link expansion failed", err);
+                          } finally {
+                              setIsResolving(false);
+                          }
+                          return; // Link found, don't search address
+                      }
+
+                      // 3. Address Geocoding (Slowest, debounced)
+                      // Only search if text is long enough and doesn't look like coords/links
+                      if (text.length >= 5 && !text.startsWith('http')) {
+                          searchTimeoutRef.current = setTimeout(async () => {
+                              setIsSearching(true);
+                              try {
+                                  // Use Nominatim OpenStreetMap Geocoding API (Free, no API key needed)
+                                  const encodedAddress = encodeURIComponent(text);
+                                  const res = await fetch(
+                                      `https://nominatim.openstreetmap.org/search?q=${encodedAddress}&format=json&limit=1&addressdetails=1`,
+                                      {
+                                          headers: {
+                                              'User-Agent': 'Alpacem-Cantieri-App'
+                                          }
+                                      }
+                                  );
+                                  const data = await res.json();
+
+                                  if (data && data.length > 0) {
+                                      const result = data[0];
+                                      const lat = parseFloat(result.lat);
+                                      const lng = parseFloat(result.lon);
+
+                                      if (!isNaN(lat) && !isNaN(lng)) {
+                                          setCoords({ lat, lng });
+                                          showToast(`Posizione trovata: ${result.display_name.substring(0, 50)}...`, "success");
+                                      }
+                                  }
+                              } catch (err) {
+                                  console.error("Address geocoding failed", err);
+                              } finally {
+                                  setIsSearching(false);
+                              }
+                          }, 1000); // Wait 1 second after user stops typing
+                      }
+                  }}
+                  placeholder={isManualEntry ? "Coordinate o Indirizzo" : "Via Principale 12, Città"}
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-5">

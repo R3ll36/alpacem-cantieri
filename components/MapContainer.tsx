@@ -93,16 +93,80 @@ export const MapComponent: React.FC<MapProps> = ({ sites, onMapClick, onMapRight
       }).addTo(userLocationLayer);
 
       // Safe Auto-Center on Load (Only once, if no specific center provided)
-      // This fixes the "Default to Milan" issue without causing crashes
       if (!center && !hasCenteredRef.current) {
         map.flyTo(e.latlng, 15, { duration: 1.5 });
         hasCenteredRef.current = true;
       }
     });
 
-    // Request location immediately on load but WITHOUT setView: true
-    // This avoids the "undefined _leaflet_pos" crash on initial load if map isn't ready
-    map.locate({ watch: true, enableHighAccuracy: true });
+    // Handle Location Error - Progressive Strategy
+    let hasTriedLowAccuracy = false;
+    map.on('locationerror', (e) => {
+      console.warn('Location error:', e.message, e.code);
+
+      // Error codes: 1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT
+      if (e.code === 1) {
+        console.error('Location permission denied by user');
+        return; // Don't retry if user denied permission
+      }
+
+      // If high accuracy failed and we haven't tried low accuracy yet, retry with low accuracy
+      if (!hasTriedLowAccuracy && (e.code === 2 || e.code === 3)) {
+        hasTriedLowAccuracy = true;
+        console.log('Retrying with low accuracy (WiFi/Cell)...');
+        map.locate({
+          watch: true,
+          enableHighAccuracy: false,
+          timeout: 30000, // Longer timeout for WiFi triangulation
+          maximumAge: 300000 // Accept cached location up to 5 minutes old
+        });
+      }
+    });
+
+    // PROGRESSIVE STRATEGY: Try GPS first (high accuracy), fallback to WiFi/Cell if fails
+    // Check if geolocation is available
+    if (!navigator.geolocation) {
+      console.error('⛔ Geolocation is not supported by this browser');
+      return;
+    }
+
+    console.log('✅ Geolocation API available');
+
+    // Check permissions if API is available
+    if (navigator.permissions) {
+      navigator.permissions.query({ name: 'geolocation' as PermissionName }).then((result) => {
+        console.log('🔐 Geolocation permission status:', result.state);
+
+        if (result.state === 'denied') {
+          console.error('⛔ Location permission DENIED by user. Please enable it in browser settings.');
+        }
+
+        // Start location watch regardless (will trigger permission prompt if needed)
+        map.locate({
+          watch: true,
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 0
+        });
+      }).catch((err) => {
+        console.warn('⚠️ Permissions API not supported or error:', err);
+        // Fallback: Start anyway
+        map.locate({
+          watch: true,
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 0
+        });
+      });
+    } else {
+      console.warn('⚠️ Permissions API not available in this browser');
+      map.locate({
+        watch: true,
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 0
+      });
+    }
 
     // Clean up
     return () => {
@@ -133,7 +197,8 @@ export const MapComponent: React.FC<MapProps> = ({ sites, onMapClick, onMapRight
   // Handle Center Updates (Manual)
   useEffect(() => {
     if (mapInstanceRef.current && center) {
-      mapInstanceRef.current.flyTo(center, 16, { duration: 1.5 });
+      mapInstanceRef.current.invalidateSize();
+      mapInstanceRef.current.flyTo(center, 18, { duration: 1.5 });
     }
   }, [center]);
 
@@ -174,8 +239,8 @@ export const MapComponent: React.FC<MapProps> = ({ sites, onMapClick, onMapRight
         if (lastLocationRef.current) {
             mapInstanceRef.current.flyTo(lastLocationRef.current, 18, { duration: 1.5 });
         } else {
-            // Fallback if no location yet
-            mapInstanceRef.current.locate({ setView: true, maxZoom: 18 });
+            // Force restart location search with progressive strategy (try GPS first)
+            mapInstanceRef.current.locate({ setView: true, maxZoom: 18, enableHighAccuracy: true, timeout: 10000 });
         }
     }
   };
