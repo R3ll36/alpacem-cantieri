@@ -53,7 +53,7 @@ export const Toast: React.FC<ToastProps> = ({ message, type, action, onClose }) 
   const isUpdate = !!action;
 
   return (
-    <div className={`fixed z-50 animate-in fade-in zoom-in duration-300 w-[90%] max-w-sm
+    <div className={`fixed z-[2000] animate-in fade-in zoom-in duration-300 w-[90%] max-w-sm
         ${isUpdate ? 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2' : 'top-4 left-1/2 -translate-x-1/2 slide-in-from-top-4'}
     `}>
       <div className={`flex items-start gap-3 px-5 py-4 rounded-2xl border shadow-2xl backdrop-blur-md ${styles[type]} ${isUpdate ? 'border-2' : ''}`}>
