@@ -14,7 +14,7 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({ theme, onToggleTheme
          <img src="/app-icon.png" alt="Alpacem" className="w-full h-full object-contain" />
       </div>
       <div className="flex items-center gap-2">
-        <button onClick={onToggleTheme} className="p-3 text-slate-500 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+        <button onClick={onToggleTheme} className="p-3 text-slate-500 dark:text-alpa-500 hover:bg-white/10 rounded-full transition-colors">
            {theme === 'light' ? <MoonIcon className="w-7 h-7"/> : <SunIcon className="w-7 h-7"/>}
         </button>
         <button onClick={onLogout} className="p-3 text-red-500 hover:bg-red-50 rounded-full dark:hover:bg-red-900/20">
