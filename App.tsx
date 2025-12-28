@@ -34,7 +34,8 @@ const App: React.FC = () => {
     setMapCenter,
     setView,
     userLocation,
-    setUserLocation
+    setUserLocation,
+    isAuthLoading
   } = useAppLogic();
 
   const handleNavigate = (view: 'map' | 'list') => {
@@ -78,6 +79,20 @@ const App: React.FC = () => {
       setIsAddingSite({ lat: 0, lng: 0, address: '' });
     }
   };
+
+  if (isAuthLoading) {
+    return (
+        <div className="h-full w-full flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+            <div className="animate-pulse flex flex-col items-center">
+                 <div className="w-24 mb-4">
+                     {/* Importing Icons here might be tricky if not available, usually Logo is global or component */}
+                     <img src="/app-icon.png" className="w-full h-full object-contain opacity-50" alt="Loading..." />
+                 </div>
+                 <p className="text-slate-400 font-medium">Caricamento...</p>
+            </div>
+        </div>
+    );
+  }
 
   if (appState.view === 'login') {
     return (

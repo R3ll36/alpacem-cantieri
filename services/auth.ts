@@ -5,11 +5,18 @@ import {
   onAuthStateChanged,
   GoogleAuthProvider,
   signInWithPopup,
-  User as FirebaseUser
+  User as FirebaseUser,
+  setPersistence,
+  browserLocalPersistence
 } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { auth, db } from './firebase';
 import { User, UserRole } from '../types';
+
+// Ensure persistence is set to LOCAL (default, but explicit helps)
+setPersistence(auth, browserLocalPersistence).catch((error) => {
+  console.error("Auth Persistence Error:", error);
+});
 
 export const authService = {
   // Sign Up with Email/Password & Create Profile

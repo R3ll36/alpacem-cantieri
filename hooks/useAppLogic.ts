@@ -168,6 +168,7 @@ export const useAppLogic = () => {
     handleRegister,
     handleGoogleLogin,
     handleLogout,
+    isAuthLoading, // Export this
     toggleTheme,
     handleMapClick,
     handleMapRightClick,
