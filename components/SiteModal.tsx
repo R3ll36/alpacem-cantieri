@@ -20,7 +20,6 @@ export const SiteModal: React.FC<SiteModalProps> = ({ initialLat, initialLng, in
     date: siteToEdit?.date || new Date().toISOString().split('T')[0],
     time: siteToEdit?.time || '08:00',
     volume: siteToEdit?.volume || 0,
-    pumpType: siteToEdit?.pumpType || 'K42',
   });
 
   // Check if this is a manual entry (we passed 0,0 from the FAB) AND we are not editing
@@ -136,36 +135,16 @@ export const SiteModal: React.FC<SiteModalProps> = ({ initialLat, initialLng, in
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-5">
-              <div>
-                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-2">Metri Cubi</label>
-                <div className="relative">
-                  <input
-                    type="number"
-                    className="w-full p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-alpa-500 shadow-sm"
-                    value={formData.volume}
-                    onChange={e => setFormData({...formData, volume: Number(e.target.value)})}
-                  />
-                  <span className="absolute right-4 top-3.5 text-slate-400 text-sm">m³</span>
-                </div>
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-2">Pompa</label>
-                <div className="relative">
-                  <select
-                    className="w-full p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-alpa-500 shadow-sm appearance-none"
-                    value={formData.pumpType}
-                    onChange={e => setFormData({...formData, pumpType: e.target.value})}
-                  >
-                    <option value="K36">K36</option>
-                    <option value="K42">K42</option>
-                    <option value="K52">K52</option>
-                    <option value="City Pump">City Pump</option>
-                  </select>
-                  <div className="absolute right-3 top-4 pointer-events-none text-slate-500">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                  </div>
-                </div>
+            <div>
+              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-2">Metri Cubi</label>
+              <div className="relative">
+                <input
+                  type="number"
+                  className="w-full p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-alpa-500 shadow-sm"
+                  value={formData.volume}
+                  onChange={e => setFormData({...formData, volume: Number(e.target.value)})}
+                />
+                <span className="absolute right-4 top-3.5 text-slate-400 text-sm">m³</span>
               </div>
             </div>
           </form>
