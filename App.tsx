@@ -10,7 +10,11 @@ import { SiteDetail } from './components/SiteDetail';
 import { SiteModal } from './components/SiteModal';
 import { InstallPrompt } from './components/InstallPrompt';
 
+import { useVersionCheck } from './hooks/useVersionCheck';
+
 const App: React.FC = () => {
+  useVersionCheck(); // Active auto-update check
+
   const {
     appState,
     selectedSite,

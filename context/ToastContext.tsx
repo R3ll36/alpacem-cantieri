@@ -2,16 +2,16 @@ import React, { createContext, useContext, useState, ReactNode, useCallback } fr
 import { Toast, ToastType } from '../components/ui/Toast';
 
 interface ToastContextType {
-  showToast: (message: string, type: ToastType) => void;
+  showToast: (message: string, type: ToastType, action?: { label: string; onClick: () => void }) => void;
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
 export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: ToastType; action?: { label: string; onClick: () => void } } | null>(null);
 
-  const showToast = useCallback((message: string, type: ToastType) => {
-    setToast({ message, type });
+  const showToast = useCallback((message: string, type: ToastType, action?: { label: string; onClick: () => void }) => {
+    setToast({ message, type, action });
   }, []);
 
   const hideToast = useCallback(() => {
@@ -25,6 +25,7 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         <Toast
           message={toast.message}
           type={toast.type}
+          action={toast.action}
           onClose={hideToast}
         />
       )}

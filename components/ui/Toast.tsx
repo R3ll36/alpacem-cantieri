@@ -5,17 +5,20 @@ export type ToastType = 'success' | 'error' | 'info' | 'warning';
 interface ToastProps {
   message: string;
   type: ToastType;
+  action?: { label: string; onClick: () => void };
   onClose: () => void;
 }
 
-export const Toast: React.FC<ToastProps> = ({ message, type, onClose }) => {
+export const Toast: React.FC<ToastProps> = ({ message, type, action, onClose }) => {
   useEffect(() => {
+    if (action) return; // Don't auto-close if there is an action
+
     const timer = setTimeout(() => {
       onClose();
     }, 4000);
 
     return () => clearTimeout(timer);
-  }, [onClose]);
+  }, [onClose, action]);
 
   const styles = {
     success: 'bg-green-50 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800',
@@ -51,7 +54,17 @@ export const Toast: React.FC<ToastProps> = ({ message, type, onClose }) => {
     <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-4 duration-300 w-[90%] max-w-sm`}>
       <div className={`flex items-start gap-3 px-4 py-3 rounded-xl border shadow-lg backdrop-blur-sm ${styles[type]}`}>
         <div className="mt-0.5">{icons[type]}</div>
-        <div className="flex-1 text-sm font-medium">{message}</div>
+        <div className="flex-1 text-sm font-medium">
+            {message}
+            {action && (
+                <button
+                    onClick={action.onClick}
+                    className="block mt-2 text-xs font-bold underline hover:opacity-80"
+                >
+                    {action.label}
+                </button>
+            )}
+        </div>
         <button onClick={onClose} className="opacity-70 hover:opacity-100 transition-opacity">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
