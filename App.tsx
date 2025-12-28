@@ -167,7 +167,7 @@ const App: React.FC = () => {
 
         {/* PERSISTENT FAB (Manual Add / Close) - z-index higher than Modal (100) */}
         {appState.user?.role === 'admin' && appState.view === 'map' && (
-             <div className="absolute bottom-28 right-6 md:bottom-8 md:right-8 z-[500]">
+             <div className="absolute bottom-28 right-6 md:bottom-10 md:right-10 z-[500]">
                 <button
                     onClick={() => {
                         if (isAddingSite) {
