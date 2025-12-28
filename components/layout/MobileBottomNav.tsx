@@ -13,8 +13,8 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentView, o
         onClick={() => onNavigate('map')}
           className={`flex-1 overflow-hidden transition-all duration-300 relative flex flex-col items-center justify-center p-2 rounded-2xl ${
             currentView === 'map'
-              ? 'text-alpa-600 dark:text-alpa-400 bg-alpa-50 dark:bg-alpa-900/20'
-              : 'text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'
+              ? 'text-alpa-600 dark:text-white'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
           }`}
         >
           <MapIcon className={`w-7 h-7 transition-transform duration-300 ${currentView === 'map' ? 'scale-110' : ''}`} />
@@ -23,8 +23,8 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentView, o
          onClick={() => onNavigate('list')}
          className={`flex-1 overflow-hidden transition-all duration-300 relative flex flex-col items-center justify-center p-2 rounded-2xl ${
             currentView === 'list'
-              ? 'text-alpa-600 dark:text-alpa-400 bg-alpa-50 dark:bg-alpa-900/20'
-              : 'text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'
+              ? 'text-alpa-600 dark:text-white'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
           }`}
       >
         <ListIcon className={`w-7 h-7 transition-transform duration-300 ${currentView === 'list' ? 'scale-110' : ''}`} />
