@@ -43,7 +43,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin, onRegister, onGoo
                 <AlpacemLogo className="w-full" />
             </div>
             <h1 className="text-xl font-semibold text-slate-800 dark:text-slate-100 tracking-tight text-center">
-              Gestione Logistica
+              Gestione Cantieri
             </h1>
           </div>
 
