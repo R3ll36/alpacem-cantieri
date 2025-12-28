@@ -34,12 +34,26 @@ export const useVersionCheck = () => {
       }
     };
 
-    // Initial check
+    // Check on load
     checkVersion();
 
-    // Periodic check (every 2 minutes)
-    const interval = setInterval(checkVersion, 2 * 60 * 1000);
+    // Check periodically
+    const interval = setInterval(checkVersion, 60 * 1000); // Every 1 minute
 
-    return () => clearInterval(interval);
+    // Check when coming back to app
+    const onResume = () => {
+      if (document.visibilityState === 'visible') {
+        checkVersion();
+      }
+    };
+
+    window.addEventListener('focus', checkVersion);
+    document.addEventListener('visibilitychange', onResume);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', checkVersion);
+      document.removeEventListener('visibilitychange', onResume);
+    };
   }, [currentVersion, showToast]);
 };
