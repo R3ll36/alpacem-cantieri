@@ -192,7 +192,7 @@ export const MapComponent: React.FC<MapProps> = ({ sites, onMapClick, onMapRight
       {/* Locate Me Button */}
       <button
         onClick={handleLocateMe}
-        className="absolute top-36 md:top-4 right-4 z-[400] w-10 h-10 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg shadow-md flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+        className="absolute top-36 md:top-4 right-4 z-[400] w-10 h-10 bg-white dark:bg-slate-800 text-slate-600 dark:text-alpa-400 rounded-lg shadow-md flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
         title="La mia posizione"
       >
         <TargetIcon className="w-6 h-6" />

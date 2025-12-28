@@ -51,7 +51,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ appState, onNavigate, onToggle
          <div className="flex gap-2">
            <button
             onClick={onToggleTheme}
-            className="flex-1 py-2 flex items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+            className="flex-1 py-2 flex items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-alpa-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
           >
             {appState.theme === 'light' ? <MoonIcon className="w-4 h-4"/> : <SunIcon className="w-4 h-4"/>}
           </button>
