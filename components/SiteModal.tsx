@@ -22,6 +22,12 @@ export const SiteModal: React.FC<SiteModalProps> = ({ initialLat, initialLng, in
     volume: siteToEdit?.volume || 0,
   });
 
+  // Mutable coordinates (either from props or parsed from address)
+  const [coords, setCoords] = useState<{lat: number, lng: number}>({
+    lat: siteToEdit?.lat || initialLat,
+    lng: siteToEdit?.lng || initialLng
+  });
+
   // Check if this is a manual entry (we passed 0,0 from the FAB) AND we are not editing
   const isManualEntry = !siteToEdit && initialLat === 0 && initialLng === 0;
 
@@ -41,8 +47,9 @@ export const SiteModal: React.FC<SiteModalProps> = ({ initialLat, initialLng, in
     const newSite: ConstructionSite = {
       id: siteToEdit?.id || Date.now().toString(),
       ...formData,
-      lat: siteToEdit?.lat || initialLat,
-      lng: siteToEdit?.lng || initialLng,
+      ...formData,
+      lat: coords.lat,
+      lng: coords.lng,
       status: siteToEdit?.status || 'planned',
       notes: siteToEdit?.notes || [],
       images: siteToEdit?.images || [],
@@ -80,7 +87,7 @@ export const SiteModal: React.FC<SiteModalProps> = ({ initialLat, initialLng, in
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3">
                   <path fillRule="evenodd" d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 00.281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 103 9c0 3.492 1.698 5.988 3.355 7.584a13.731 13.731 0 002.273 1.765 11.842 11.842 0 00.976.544l.062.029.006.003.002.001.003.001a.75.75 0 00.014-.001zM10 15a6 6 0 100-12 6 6 0 000 12z" clipRule="evenodd" />
                 </svg>
-                <span>{initialLat.toFixed(5)}, {initialLng.toFixed(5)}</span>
+                <span>{coords.lat ? `${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)}` : 'Nessuna posizione'}</span>
               </>
             )}
           </div>
@@ -109,8 +116,27 @@ export const SiteModal: React.FC<SiteModalProps> = ({ initialLat, initialLng, in
                 type="text"
                 className="w-full p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-alpa-500 focus:border-alpa-500 outline-none transition-all shadow-sm"
                 value={formData.address}
-                onChange={e => setFormData({...formData, address: e.target.value})}
-                placeholder={isManualEntry ? "Inserisci indirizzo completo" : "Via Principale 12, Città"}
+                value={formData.address}
+                onChange={e => {
+                    const text = e.target.value;
+                    setFormData({...formData, address: text});
+
+                    // Auto-extract coordinates from text/links
+                    // Regex for "lat, lng" patterns (e.g. 46.123, 13.123) common in Maps links
+                    const coordRegex = /[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)/;
+                    const match = text.match(coordRegex);
+
+                    if (match) {
+                        const [fullMatch] = match;
+                        const [latStr, lngStr] = fullMatch.split(',');
+                        const lat = parseFloat(latStr.trim());
+                        const lng = parseFloat(lngStr.trim());
+                        if (!isNaN(lat) && !isNaN(lng)) {
+                            setCoords({ lat, lng });
+                        }
+                    }
+                }}
+                placeholder={isManualEntry ? "Inserisci indirizzo o LINK MAPS" : "Via Principale 12, Città"}
               />
             </div>
 

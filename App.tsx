@@ -94,8 +94,10 @@ const App: React.FC = () => {
     // Combine all shared content to search for coordinates/links
     const fullContent = `${sharedTitle} ${sharedText} ${sharedUrl}`;
 
-    if (!sharedText && !sharedUrl) return;
+    if (!sharedText && !sharedUrl && !sharedTitle) return;
 
+    // DEBUG: Inform user we received something
+    showToast(`Analisi link condiviso...`, 'info');
     console.log("Received Share:", { sharedTitle, sharedText, sharedUrl });
 
     // 1. Try to find coordinates directly (e.g. "46.123, 13.456")
