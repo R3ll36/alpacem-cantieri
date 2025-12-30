@@ -94,7 +94,12 @@ export const MapComponent: React.FC<MapProps> = ({ sites, onMapClick, onMapRight
 
       // Safe Auto-Center on Load (Only once, if no specific center provided)
       if (!center && !hasCenteredRef.current) {
-        map.flyTo(e.latlng, 15, { duration: 1.5 });
+        // Use setTimeout to ensure map is fully initialized
+        setTimeout(() => {
+          if (mapInstanceRef.current) {
+            mapInstanceRef.current.flyTo(e.latlng, 15, { duration: 1.5 });
+          }
+        }, 100);
         hasCenteredRef.current = true;
       }
     });
